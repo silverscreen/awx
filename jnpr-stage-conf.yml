@@ -9,7 +9,7 @@
   gather_facts: no
 
   vars:
-    conf_file: "junos_conf/delete-infradata-new-ssh-key.conf"
+    conf_file: "junos_conf/new-user-ssh.conf"
     connection_settings:
       timeout: 120
 
