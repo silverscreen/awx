@@ -1,0 +1,44 @@
+---
+- name: Deploy .conf file to JUNOS device with commit-check
+  hosts:
+    - all
+  roles: 
+    - Juniper.junos
+  connection: local
+  gather_facts: no
+
+  vars:
+    # SET CONF FILE HERE:
+    conf_file: "junos_conf/delete-infradata-new-ssh-key.conf"
+
+    connection_settings:
+      timeout: 120
+
+  tasks:
+    - name: Deploy .conf to device with commit-confirm 5
+      juniper_junos_config:
+        provider: "{{ connection_settings }}"
+        src: "{{ conf_file }}"
+        load: replace
+        #check: yes
+        commit: yes
+        confirmed: 5
+        diff: yes
+        ignore_warning: yes
+      register: config_results
+      #notify: confirm previous commit
+
+    - name: show configuration change
+      debug:
+        var: config_results.diff_lines
+      when: config_results.diff_lines is defined
+
+    - name: Pause playbook for commit-confirm
+      pause:
+        minutes: 4
+
+    - name: Commmit confirm
+      juniper_junos_config:
+        provider: "{{ connection_settings }}"
+        comment: "playbook base-settings.yml, confirming previous commit"
+        commit: yes

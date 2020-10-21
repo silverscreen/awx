@@ -1,0 +1,23 @@
+#jinja2: lstrip_blocks: True
+{# Identifiers can include letters, underscores, and digits (cannot start with a digit) #}
+system {
+    host-name {{ inventory_hostname }};
+    login {
+        user lawrence {
+            class super-user;
+            authentication {
+                ssh-rsa "ssh-rsa AAAAB3NzaC1yvPzOaX3gt8Uv sean@mbp15.local";
+            }
+        }
+    }
+    replace:
+    name-server {
+        {{ dns1 }};
+        {{ foo }};
+    }
+    services {    
+        netconf {
+            ssh;
+        }
+    }
+}

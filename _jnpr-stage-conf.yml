@@ -1,0 +1,36 @@
+---
+# https://junos-ansible-modules.readthedocs.io/en/2.0.0/juniper_junos_config.html
+- name: Stage .conf file against JUNOS device (commit-check)
+  hosts:
+    - breen
+  roles: 
+    - Juniper.junos
+  connection: local
+  gather_facts: no
+
+  vars:
+    conf_file: "junos_conf/delete-infradata-new-ssh-key.conf"
+    connection_settings:
+      timeout: 120
+
+  tasks:
+    - name: Stage .conf file against device
+      juniper_junos_config:
+        provider: "{{ connection_settings }}"
+        src: "{{ conf_file }}"
+        load: replace
+        #load: merge
+        # Provide a confirmed timeout, in minutes, to be used with the commit operation.
+        # This option is only valid if the commit option is true.
+        #commit: false
+        check: yes
+        commit: no
+        #confirmed: 5
+        diff: yes
+        ignore_warning: yes
+      register: config_results
+
+    - name: show configuration changes
+      debug:
+        var: config_results.diff_lines
+      when: config_results.diff_lines is defined

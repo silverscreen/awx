@@ -1,0 +1,42 @@
+#jinja2: lstrip_blocks: True
+{# Identifiers can include letters, underscores, and digits (cannot start with a digit) #}
+system {
+    host-name {{ inventory_hostname }};
+    replace:
+    name-server {
+        {% for server in dns_servers %}
+            {{ server }};
+        {% endfor %}
+    }
+}
+interfaces {
+    {# the 'interface' key refers to the dict key, 'int.' access the dict objects inside  #}
+    {% for interface, int in uplinks.items() %}
+    {{ interface }} {
+        description {{ int.description }};
+    {# the '-%}' strips whitespace after the tag and ensure my template is rendered 'correctly' #}
+        {% if int.speed is none %}
+        {% else %}
+        speed {{ int.speed }};
+        {% endif %}
+        unit 0 {
+            family inet {
+                address {{ int.address }}/{{ int.mask }} {
+                    vrrp-group {{ int.vrrp_group }}; {
+                        virtual-address {{ int.virtual_address }};
+                        priority {{ int.priority }};
+                        advertise-interval {{ int.advertise_interval }};
+                        preempt;
+                        accept-data;
+                        track {
+                            interface {{ int.track_interface }} {
+                                priority-cost {{ int.track_priority_cost }};
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    {% endfor %}
+}

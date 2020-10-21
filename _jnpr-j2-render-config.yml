@@ -1,0 +1,30 @@
+---
+- name: Generate junos configuration from jinja
+  hosts:
+    - MOO-US-BOS-SRX01
+    - MOO-US-BOS-SRX02
+  roles:
+    - Juniper.junos
+  connection: local
+  gather_facts: no
+
+  vars:
+    # Set jinja template here
+    j2_tmt: "interfaces-vrrp.j2"
+    src_j2_file: "jinja/{{ j2_tmt }}"
+
+    local_tmp_dir: "/tmp/junosconfig"
+    dest_conf_file: "{{ local_tmp_dir}}/{{ inventory_hostname }}.conf"
+
+  tasks:
+    - name: Confirm or create configs directory
+      file:
+        path: "{{ local_tmp_dir }}"
+        state: directory
+      run_once: yes
+      delegate_to: localhost
+    
+    - name: Save device information using template
+      template:
+        src: "{{ src_j2_file }}"
+        dest: "{{ dest_conf_file }}"

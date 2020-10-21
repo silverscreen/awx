@@ -1,0 +1,6 @@
+---
+sysadmins:
+  lawrence:
+    name: 'Lawrence Long'
+    email: 'lawrence@noreply.com'
+    ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC5rv5E3rHl+1SJsQPcIQlzLAoTR5oSeP8GrbHpNFCpeiWfDP0Futp0OD+igjhe4H1JXwJue/5rzprD6qYxNDrUmHgWZwQDmbJ+FOb4T7EJjuYTWELNGQ42ibeHWw8zdr91Uqu3S81McDD6SIlBGTPgB+mvPdp5A2FUuD3THRFI/nVP4dWEf3/KSlyUvFJn2xh1bMN8CTchsrSvmRHOeb5WvKPVbMm6bi0nbzf+1qLHZ0sMAZZjoUXJ2XDt5E/tIYptc0+NZAvsJQPN4GFcs3Domyy1HFnQ83bqJC4f1AO1yomrIQbnFHi7P8I7PoiZkXCRjKjjvGzbRYSqxRPG1ej7 lawrence@lawrencebox"

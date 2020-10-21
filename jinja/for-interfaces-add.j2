@@ -1,0 +1,16 @@
+#jinja2: lstrip_blocks: True
+{# Identifiers can include letters, underscores, and digits (cannot start with a digit) #}
+system {
+    host-name {{ inventory_hostname }};
+}
+interfaces {
+    {% for interface, int in uplinks.items() %}
+    {{ interface }} {
+    unit 0 {
+        family inet {
+            address {{ int.address }}/{{ int.mask }};
+            }
+        }
+    }
+  {% endfor %}
+}

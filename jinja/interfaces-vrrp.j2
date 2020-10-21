@@ -1,0 +1,86 @@
+#jinja2: lstrip_blocks: True
+{# identifiers can include letters, underscores, and digits (cannot start with a digit) #}
+{# You can use '-%}' at the end of a tag to strip trailing whitespace #}
+system {
+    host-name {{ inventory_hostname }};
+    replace:
+    name-server {
+        {% for server in dns_servers %}
+            {{ server }};
+        {% endfor %}
+    }
+}
+interfaces {
+    {# the 'interface' key refers to the dict key, 'int.' access the dict objects inside #}
+    {% for interface, int in uplinks.items() %}
+    {{ interface }} {
+        {# description #}
+        {% if int.description != none %}
+        description {{ int.description }};
+        {% endif %}
+        {# link speed #}
+        {% if int.speed != none %}
+        speed {{ int.speed }};
+        {% endif %}
+        {# link operational mode #}
+        {% if int.link_mode != none %}
+        link-mode {{ int.link_mode }};
+        {% endif %}
+        {# ethernet interface-specific options #}
+        {% if int.ether_options != none %}
+        ether-options {
+            802.3ad {{ int.ether_options }};
+        }
+        {% endif %}
+        {# 802.1Q VLAN tagging support #}
+        {% if int.vlan_tagging != none %}
+        vlan-tagging;
+        {% endif %}
+        {# aggregated ethernet interface-specific options #}
+        {% if int.aggregated_ether_options != none %}
+        aggregated-ether-options {
+            lacp {
+                active;
+                periodic slow;
+            }
+        }
+        {% endif %}
+        {# logical interface #}
+        {% if int.unit != none %}
+        {% for unit, u in int.unit.items() %}
+        unit {{ u.interface_unit_number }} {
+            {# logical interface description #}
+            {% if u.description != none %}
+            description {{ u.description }};
+            {% endif %}
+            {% if u.vlan_id != none %}
+            vlan-id {{ u.vlan_id }};
+            {% endif %}
+            family inet {
+                address {{ u.address }}/{{ u.mask }} {
+                    {# vrrp parameters #}
+                    {% if u.vrrp != none %}
+                    vrrp-group {{ u.vrrp.group_identifier }} {
+                        virtual-address {{ u.vrrp.vip }};
+                        priority {{ u.vrrp.priority }};
+                        advertise-interval {{ u.vrrp.adv_interval }};
+                        preempt;
+                        accept-data;
+                        {# track interface #}
+                        {% if u.vrrp.track != none %}
+                        track {
+                            interface {{ u.vrrp.track.interface }} {
+                                priority-cost {{ u.vrrp.track.priority_cost }};
+                            }
+                        }
+                        {% endif %}
+                    }
+                    {% endif %}
+                }
+            }
+        }
+        {% endfor %}
+        {% endif %}
+    }
+    {% endfor %}
+}
