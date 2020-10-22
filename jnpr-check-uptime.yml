@@ -12,9 +12,10 @@
         commands:
            - show system uptime
         provider:
-          host: "{{ ansible_host }}"
+          #host: "{{ ansible_host }}"
           port: 22
-          user: "{{ ansible_user }}"
+          #user: "{{ ansible_user }}"
+          user: lawrence
       register: uptime
 
     - name: display uptimes (Ansible shortcut)
