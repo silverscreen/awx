@@ -1,0 +1,17 @@
+---
+- hosts: all
+  gather_facts: no
+  #become: yes
+  #vars:
+  #  ansible_ssh_private_key_file: ssh-keys/techops-ansible/id_rsa
+
+  tasks:
+  # You can also use the 'cmd' parameter instead of free form format.
+  - name: List current directory
+    # https://www.middlewareinventory.com/blog/ansible-shell-examples/
+    shell:
+      cmd: ls -al
+      chdir: /
+    register: displaylist
+
+  - debug: msg="{{displaylist.stdout_lines}}"

@@ -1,0 +1,41 @@
+---
+- hosts: all
+  gather_facts: no
+  become: yes
+  #vars:
+  #  ansible_ssh_private_key_file: ssh-keys/techops-ansible/id_rsa
+
+  tasks:
+    - name: adduser 
+      user:
+        name: jon
+        shell: /bin/bash
+
+    - name: add jon to sudo
+      copy:
+        dest: "/etc/sudoers.d/jon"
+        content: "jon ALL=(ALL) NOPASSWD: ALL"        
+
+    - name: create user key directory
+      file:
+        path: /etc/ssh/keys/jon
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: deploy authorized_keys
+      copy:
+        dest: "/etc/ssh/keys/jon/authorized_keys"
+        content: "{{ jon_ssh_key }}"
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - restart ssh
+
+  handlers:
+     - name: restart ssh
+       service:
+         name=sshd
+         state=restarted
